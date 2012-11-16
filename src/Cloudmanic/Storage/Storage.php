@@ -8,39 +8,36 @@
 //							cloudstorage solutions. 
 //
 
+namespace Cloudmanic\Storage;
+
 class Storage 
 {
-	protected $_CI;
-	protected $_driver = FALSE;
-	protected $_config = array();
+	private $_driver = FALSE;
+	private $_config = array();
 	
 	//
-	// Constructor É
+	// Constructor, pass in the driver name, and auth info.
 	//
-	function __construct()
+	function __construct($driver, $username, $key)
 	{
-		$this->_CI =& get_instance();
-		$this->_config = $this->_CI->config->item('storage');
+		$this->load_driver($driver, $username, $key);
 	}
 	
 	//
 	// Set wich driver we are going to use for this
 	// instance of the Storage class.
 	//
-	function load_driver($driver)
+	function load_driver($driver, $username, $key)
 	{
 		switch(strtolower($driver))
 		{
 			case 'amazon-s3': 
-				$this->_CI->load->library('amazon_s3_driver');
-				$this->_driver = 'amazon_s3_driver';
-				log_message('debug', 'Amazon S3 Class Initialized');
+				//$this->_CI->load->library('amazon_s3_driver');
+				//$this->_driver = 'amazon_s3_driver';
 			break;
 			
 			case 'rackspace-cf':
-				$this->_CI->load->library('rackspace_cf_driver');
-				$this->_driver = 'rackspace_cf_driver';
-				log_message('debug', 'Racespace Cloudfiles Class Initialized');
+				$this->_driver = new RackspaceCfDriver($username, $key);
 			break;
 		}
 		
@@ -52,7 +49,7 @@ class Storage
 	//
 	function create_container($cont, $acl = 'private')
 	{
-		return $this->_CI->{$this->_driver}->create_container($cont, $acl);	
+		return $this->_driver->create_container($cont, $acl);	
 	}
 
 	//
@@ -60,7 +57,7 @@ class Storage
 	//
 	function delete_container($cont)
 	{
-		return $this->_CI->{$this->_driver}->delete_container($cont);	
+		return $this->_driver->delete_container($cont);	
 	}
 	
 	//
@@ -68,7 +65,7 @@ class Storage
 	//
 	function list_containers()
 	{
-		return $this->_CI->{$this->_driver}->list_containers();
+		return $this->_driver->list_containers();
 	}
 	
 	//
@@ -76,7 +73,7 @@ class Storage
 	//
 	function list_files($cont)
 	{
-		return $this->_CI->{$this->_driver}->list_files($cont);
+		return $this->_driver->list_files($cont);
 	}
 	
 	//
@@ -84,7 +81,7 @@ class Storage
 	//
 	function upload_file($cont, $path, $name, $type = NULL, $acl = 'private', $metadata = array())
 	{
-		return $this->_CI->{$this->_driver}->upload_file($cont, $path, $name, $type, $acl, $metadata);
+		return $this->_driver->upload_file($cont, $path, $name, $type, $acl, $metadata);
 	}
 	
 	//
@@ -92,7 +89,7 @@ class Storage
 	//
 	function delete_file($container, $file)
 	{
-		return $this->_CI->{$this->_driver}->delete_file($container, $file);		
+		return $this->_driver->delete_file($container, $file);		
 	}
 	
 	//
@@ -101,7 +98,7 @@ class Storage
 	//
 	function get_authenticated_url($cont, $file, $seconds)
 	{
-		return $this->_CI->{$this->_driver}->get_authenticated_url($cont, $file, $seconds);
+		return $this->_driver->get_authenticated_url($cont, $file, $seconds);
 	}
 }
 
