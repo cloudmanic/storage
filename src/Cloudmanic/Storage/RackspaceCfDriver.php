@@ -9,7 +9,8 @@
 
 namespace Cloudmanic\Storage;
 
-require_once dirname(dirname(__FILE__)) . '/Storage/RackspaceCloudFiles/cloudfiles.php';
+// We should include the rackspace package list package. (which is going away in Aug. 2013)
+//require_once dirname(dirname(__FILE__)) . '/Storage/RackspaceCloudFiles/cloudfiles.php';
 
 class RackspaceCfDriver
 {	
